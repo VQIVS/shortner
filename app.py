@@ -53,7 +53,7 @@ async def health_check():
 
 link_handler.get_db_dependency = get_db
 
-app.include_router(link_router)
+app.include_router(link_router, prefix="/api")
 app.include_router(redirect_router)
 
 
