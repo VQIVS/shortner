@@ -1,5 +1,3 @@
-"""Service layer for URL operations"""
-
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta
 from shortner.repo import url as url_repo
@@ -12,7 +10,6 @@ async def create_short_link(
     original_url: str,
     ttl_seconds: int | None = None,
 ) -> URL:
-    """Create a new shortened link with optional TTL"""
     short_code = generate_short_code(length=6)
     
     expires_at = None
@@ -32,19 +29,16 @@ async def create_short_link(
 
 
 async def get_link(session: AsyncSession, short_code: str) -> URL | None:
-    """Get a link by short code"""
     url_entry = await url_repo.get_url_by_short_code(session, short_code)
     
     if not url_entry:
         return None
     
-    # Check if link has expired
     if url_entry.expires_at and datetime.utcnow() > url_entry.expires_at:
         await url_repo.delete_url(session, short_code)
         await session.commit()
         return None
     
-    # Increment clicks
     await url_repo.increment_clicks(session, short_code)
     await session.commit()
     

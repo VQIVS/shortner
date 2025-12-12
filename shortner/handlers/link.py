@@ -1,5 +1,3 @@
-"""Handler layer for URL API endpoints"""
-
 from typing import AsyncGenerator
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
@@ -10,7 +8,6 @@ from shortner.schemas.link import CreateLinkRequest, LinkResponse
 router = APIRouter(prefix="/links", tags=["links"])
 redirect_router = APIRouter(tags=["redirect"])
 
-# This will be set by app.py
 get_db_dependency = None
 
 
@@ -39,7 +36,6 @@ async def get_link(
     short_code: str,
     session: AsyncSession = Depends(get_session),
 ) -> LinkResponse:
-    """Get a link by short code"""
     url_entry = await link_service.get_link(session=session, short_code=short_code)
     
     if not url_entry:
@@ -71,7 +67,6 @@ async def redirect_to_url(
     short_code: str,
     session: AsyncSession = Depends(get_session),
 ):
-    """Redirect to the original URL using the short code"""
     url_entry = await link_service.get_link(session=session, short_code=short_code)
     
     if not url_entry:
