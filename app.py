@@ -1,11 +1,12 @@
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
-from fastapi import FastAPI
+from fastapi import FastAPI 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from shortner.models.url import Base
+from shortner.handlers.link import router as link_router, redirect_router
 import os
 import uvicorn
 
+import shortner.handlers.link as link_handler
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
     "postgresql+asyncpg://postgres:postgres@localhost:5432/shortner"
@@ -47,8 +48,13 @@ app = FastAPI(
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint"""
     return {"status": "healthy"}
+
+
+link_handler.get_db_dependency = get_db
+
+app.include_router(link_router)
+app.include_router(redirect_router)
 
 
 if __name__ == "__main__":
